@@ -1,0 +1,67 @@
+-- database: /Users/nikitapahomov/Desktop/data.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+CREATE TABLE shop (
+id INTEGER PRIMARY KEY,
+name VARCHAR(255) UNIQUE,
+balance FLOAT NOT NULL);
+
+CREATE TABLE product (
+id INTEGER PRIMARY KEY,
+name VARCHAR(255),
+price FLOAT NOT NULL);
+
+CREATE TABLE warehouse (
+shop_id INTEGER REFERENCES shop (id),
+product_id INTEGER REFERENCES product (id),
+quantity INTEGER NOT NULL,
+PRIMARY KEY (shop_id, product_id));
+
+INSERT INTO shop (id, name, balance) VALUES (1, 'пятерочка',31);
+INSERT INTO shop (id, name, balance) VALUES (2, 'перекресток',133);
+
+INSERT INTO product VALUES (1, 'молоко', 100);
+INSERT INTO product VALUES (2, 'хлеб', 25);
+INSERT INTO product VALUES (3, 'хлеб', 30);
+
+INSERT INTO warehouse VALUES (1, 1, 20);
+INSERT INTO warehouse VALUES (1, 2, 10);
+INSERT INTO warehouse VALUES (2, 1, 30);
+
+SELECT * FROM shop;
+SELECT * FROM product;
+SELECT * FROM warehouse
+WHERE shop_id = 1;
+
+
+CREATE TABLE worker (
+    worker_id INTEGER PRIMARY KEY,
+    shop_id INTEGER REFERENCES shop (id),
+    name VARCHAR(255),
+    salary INTEGER NOT NULL,
+    position VARCHAR(255)
+);
+
+INSERT INTO worker
+VALUES (1, 1, 'CEMEN', 800, 'cashier');
+INSERT INTO worker
+VALUES (2, 1, 'GALINA', 1600, 'admin');
+INSERT INTO worker
+VALUES (3, 2, 'KIRILL', 1000, 'cashier');
+INSERT INTO worker
+VALUES (4, 2, 'IVAN', 1200, 'admin');
+
+
+SELECT * FROM worker ORDER BY salary DESC;
+SELECT shop.name, COUNT(*) AS workers_number
+FROM worker, shop WHERE worker.shop_id = shop.id
+GROUP BY shop.name;
+SELECT name, AVG(price) as avg_price
+FROM product GROUP BY name;
+
+SELECT product.name, SUM(warehouse.quantity)
+ FROM warehouse, product
+  WHERE product.id = warehouse.product_id
+   GROUP BY name;
+SELECT position, AVG(salary) as salary
+FROM worker GROUP BY position;
